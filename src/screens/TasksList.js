@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput, StyleSheet, Pressable, Keyboard, FlatList, TouchableOpacity } from 'react-native';
-import { addDoc, collection, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 
 import { FIRESTORE_DB } from '../../firebaseconfig'
@@ -15,15 +15,21 @@ export default function TasksList({ navigation }) {
   }
 
   function renderTask({ item }) {
-    async function toogleDone() {}
+    const ref = doc(FIRESTORE_DB, `tasks/${item.id}`);
+
+    async function toogleDone() {
+        updateDoc(ref, { done: !item.done });
+    }
     
-    async function deletItem() {}
+    async function deletItem() {
+        deleteDoc(ref);
+    }
 
     return (
         <View style={styles.item}>
             <TouchableOpacity style={styles.buttonItem} onPress={toogleDone}>
-                {!item.done && <MaterialIcons name="radio-button-unchecked" size={24} color="black" />}
-                {item.done && <Ionicons name="checkmark-circle" size={24} color="black" />}
+                {!item.done && <MaterialIcons name="radio-button-unchecked" size={30} color="black" />}
+                {item.done && <Ionicons name="checkmark-circle" size={30} color="green" />}
                 <Text style={styles.textItem}>{item.title}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={deletItem}>
@@ -100,7 +106,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     textItem: {
-        fontSize: 18,
-        marginLeft: 3
+        fontSize: 20,
+        marginLeft: 5
     }
 });
